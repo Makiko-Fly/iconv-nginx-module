@@ -448,7 +448,8 @@ conv_begin:
             dd("MDL =============== after one conv call, len:%d, rest:%d", (int)len, (int)rest);
             if (old_len == len) {
                 dd("MDL=> len didn't change!!");
-                goto conv_done;
+                len--;
+                data = (u_char *)data + 1;
             }
             if (rv == (size_t) -1) {
                 dd("MDL =============== rv indicates wrong: %d.", (int)rv);
