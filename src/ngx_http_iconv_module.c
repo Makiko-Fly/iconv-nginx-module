@@ -6,6 +6,7 @@
 
 #include <ndk.h>
 #include <iconv.h>
+#include <cconv.h>
 #include <ngx_config.h>
 #include <ngx_core.h>
 #include <ngx_http.h>
@@ -406,7 +407,8 @@ ngx_http_do_iconv(ngx_http_request_t *r, ngx_chain_t **c, void *data,
 
     cv = 0;
     dd("iconv from=%s, to=%s", from, to);
-    cd = iconv_open((const char *) to, (const char *) from);
+    // cd = iconv_open((const char *) to, (const char *) from);
+    cd = cconv_open(CCONV_CODE_UHT, CCONV_CODE_UTF);
 
     if (cd == (iconv_t) -1) {
         dd("iconv open error");
@@ -435,7 +437,7 @@ conv_begin:
         rest = iconv_buf_size;
 
         do {
-            rv = iconv(cd, (void *) &data, &len, (void *) &b->last, &rest);
+            rv = cconv(cd, (void *) &data, &len, (void *) &b->last, &rest);
 
             if (rv == (size_t) -1) {
                 if (errno == EINVAL) {
