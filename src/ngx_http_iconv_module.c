@@ -417,6 +417,7 @@ ngx_http_do_iconv(ngx_http_request_t *r, ngx_chain_t **c, void *data,
 
     dd("len=%zu, iconv_buf_size=%zu", len, iconv_buf_size);
     ll = &chain;
+    size_t  old_len = len;
 
 conv_begin:
 
@@ -424,14 +425,14 @@ conv_begin:
     	dd("MDL =============== allocate chain");
         cl = ngx_alloc_chain_link(r->pool);
         if (cl == NULL) {
-            iconv_close(cd);
+            cconv_close(cd);
             return NGX_ERROR;
         }
         dd("MDL =============== create temp buf");
         /* --- b->temporary--- */
         b = ngx_create_temp_buf(r->pool, iconv_buf_size);
         if (b == NULL) {
-            iconv_close(cd);
+            cconv_close(cd);
             return NGX_ERROR;
         }
 
@@ -483,6 +484,11 @@ conv_begin:
                         goto conv_done;
                     }
 
+                }
+            } else {  // rv indicates success, compare old len with current len
+                if (old_len == len) {
+                    dd("len didn't change!!");
+                    goto conv_done;
                 }
             }
 
