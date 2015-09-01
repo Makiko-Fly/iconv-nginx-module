@@ -1,5 +1,5 @@
 #ifndef DDEBUG
-#define DDEBUG 0
+#define DDEBUG 1 
 #endif
 #include "ddebug.h"
 
@@ -77,7 +77,7 @@ static ngx_command_t ngx_http_iconv_commands[] = {
     },
 
     { ngx_string("iconv_filter"),
-      NGX_HTTP_LOC_CONF|NGX_CONF_TAKE2,
+      NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE2,
       ngx_http_iconv_conf_handler,
       NGX_HTTP_LOC_CONF_OFFSET,
       0,
@@ -421,26 +421,35 @@ ngx_http_do_iconv(ngx_http_request_t *r, ngx_chain_t **c, void *data,
 conv_begin:
 
     while (len) {
+    	dd("MDL =============== 11111111111111111111111");
         cl = ngx_alloc_chain_link(r->pool);
         if (cl == NULL) {
             iconv_close(cd);
             return NGX_ERROR;
         }
+    	dd("MDL =============== 22222222222222222222222");
         /* --- b->temporary--- */
         b = ngx_create_temp_buf(r->pool, iconv_buf_size);
         if (b == NULL) {
             iconv_close(cd);
             return NGX_ERROR;
         }
+	dd("MDL =============== 33333333333333333333333");
 
         cl->buf = b;
         rest = iconv_buf_size;
 
         do {
             rv = cconv(cd, (void *) &data, &len, (void *) &b->last, &rest);
+		if ((int)rv < 0) {
+			dd("MDL=== rv=%zu, cconv error!", rv);
+			break;
+		}
 
+		dd("MDL =============== 44444444444444444444444");
             if (rv == (size_t) -1) {
                 if (errno == EINVAL) {
+			dd("MDL =============== 555555555555555555555555555");
                     cv += iconv_buf_size - rest;
                     dd("iconv error:EINVAL,len=%d cv=%d rest=%d", (int) len,
                         (int) cv, (int) rest);
@@ -448,12 +457,14 @@ conv_begin:
                 }
 
                 if (errno == E2BIG) {
+			dd("MDL =============== 666666666666666666666666666");
                     dd("E2BIG");
                     /* E2BIG error is not considered*/
                     break;
                 }
 
                 if (errno == EILSEQ) {
+			dd("MDL =============== 77777777777777777777777777");
                     ngx_log_error(NGX_LOG_NOTICE, r->connection->log, 0,
                                   "iconv sees invalid character sequence "
                                   "(EILSEQ)");
@@ -536,7 +547,8 @@ conv_done:
     }
 
     dd("out");
-    iconv_close(cd);
+    cconv_close(cd);
+    // iconv_close(cd);
     return NGX_OK;
 }
 
