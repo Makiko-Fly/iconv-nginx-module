@@ -281,13 +281,16 @@ ngx_http_iconv_merge_chain_link(ngx_http_iconv_ctx_t *ctx, ngx_chain_t *in,
     dd("XXX count buffer length: %zu", len);
 
     ncl = ngx_alloc_chain_link(r->pool);
+    dd("MDL ===== 1111111111111111111111");
     if (ncl == NULL) {
-        dd("MDL=> can't allocate chain link ncl");
+        dd("MDL=> ngx_http_iconv_merge_chain_link, can't allocate chain link ncl");
         return NGX_ERROR;
     }
 
     buf = ngx_create_temp_buf(r->pool, len);
+    dd("MDL ===== 2222222222222222222");    
     if (buf == NULL) {
+        dd("MDL=> ngx_http_iconv_merge_chain_link, can't allocate temp buf");        
         return NGX_ERROR;
     }
 
