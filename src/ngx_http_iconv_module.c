@@ -242,7 +242,7 @@ ngx_http_iconv_body_filter(ngx_http_request_t *r, ngx_chain_t *in)
     }
 
     dd("pass to next body filter->\n%.*s",
-       (int) (ncl->buf->last - ncl->buf->pos), ncl->buf->pos);
+       (int) (nncl->buf->last - nncl->buf->pos), nncl->buf->pos);
 
     dd("nncl: len: %d, sync: %d, last_buf: %d, flush: %d, next: %p",
        (int) (nncl->buf->last - nncl->buf->pos),
@@ -344,7 +344,7 @@ ngx_http_iconv_filter_convert(ngx_http_iconv_ctx_t *ctx, ngx_chain_t *in,
     rest = 0;
     ilcf = ngx_http_get_module_loc_conf(ctx->r, ngx_http_iconv_module);
 
-    dd("XXX in->buf: %.*s",
+    dd("XXX ================================================================= html pased in: in->buf: %.*s",
        (int) (in->buf->last - in->buf->pos),
        in->buf->pos);
 
@@ -487,7 +487,11 @@ conv_begin:
                 }
             } else {  // rv indicates success, compare old len with current len
                 if (old_len == len) {
-                    dd("len didn't change!!");
+                    dd("MDL=> len didn't change!!");
+                    goto conv_done;
+                }
+                if (len == 1) {
+                    dd("MDL=> len is 1");
                     goto conv_done;
                 }
             }
