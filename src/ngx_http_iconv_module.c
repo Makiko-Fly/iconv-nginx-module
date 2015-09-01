@@ -282,6 +282,7 @@ ngx_http_iconv_merge_chain_link(ngx_http_iconv_ctx_t *ctx, ngx_chain_t *in,
 
     ncl = ngx_alloc_chain_link(r->pool);
     if (ncl == NULL) {
+        dd("MDL=> can't allocate chain link ncl");
         return NGX_ERROR;
     }
 
