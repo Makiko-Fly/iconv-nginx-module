@@ -417,7 +417,6 @@ ngx_http_do_iconv(ngx_http_request_t *r, ngx_chain_t **c, void *data,
 
     dd("len=%zu, iconv_buf_size=%zu", len, iconv_buf_size);
     ll = &chain;
-    size_t  old_len = len;
 
 conv_begin:
 
@@ -440,8 +439,13 @@ conv_begin:
         rest = iconv_buf_size;
 
         do {
+            size_t  old_len = len;
             rv = cconv(cd, (void *) &data, &len, (void *) &b->last, &rest);
             dd("MDL =============== after one conv call, len:%d, rest:%d", (int)len, (int)rest);
+            if (old_len == len) {
+                dd("MDL=> len didn't change!!");
+                goto conv_done;
+            }
             if (rv == (size_t) -1) {
                 dd("MDL =============== rv indicates wrong: %d.", (int)rv);
                 if (errno == EINVAL) {
@@ -484,15 +488,6 @@ conv_begin:
                         goto conv_done;
                     }
 
-                }
-            } else {  // rv indicates success, compare old len with current len
-                if (old_len == len) {
-                    dd("MDL=> len didn't change!!");
-                    goto conv_done;
-                }
-                if (len == 1) {
-                    dd("MDL=> len is 1");
-                    goto conv_done;
                 }
             }
 
