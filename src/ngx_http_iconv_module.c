@@ -384,7 +384,7 @@ ngx_http_iconv_filter_convert(ngx_http_iconv_ctx_t *ctx, ngx_chain_t *in,
             return NGX_ERROR;
         }
 
-        dd("%p, %p, %zu", ctx->uc.data, in->buf->last, rest);
+        dd("MDL=> after conv, store unprocessed bytes: %p, %p, %zu", ctx->uc.data, in->buf->last, rest);
 
         ngx_memcpy(ctx->uc.data, in->buf->last - rest, rest);
 
@@ -448,8 +448,9 @@ conv_begin:
             dd("MDL =============== after one conv call, len:%d, rest:%d", (int)len, (int)rest);
             if (old_len == len) {
                 dd("MDL=> len didn't change!!");
-                len--;
-                data = (u_char *)data + 1;
+                goto conv_done;
+                // len--;
+                // data = (u_char *)data + 1;
             }
             if (rv == (size_t) -1) {
                 dd("MDL =============== rv indicates wrong: %d.", (int)rv);
