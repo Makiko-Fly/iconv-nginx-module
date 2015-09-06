@@ -418,7 +418,9 @@ ngx_http_do_iconv(ngx_http_request_t *r, ngx_chain_t **c, void *data,
         dd("iconv open error");
         return NGX_ERROR;
     }
-
+    
+    // dynamically adjust iconv_buf_size, because len might be as hugh as 32768
+    iconv_buf_size = 2 * len;
     dd("len=%zu, iconv_buf_size=%zu", len, iconv_buf_size);
     ll = &chain;
 
