@@ -182,9 +182,12 @@ static ngx_int_t ngx_http_iconv_header_filter(ngx_http_request_t *r)
     }
     
     // check if content is text
-    if (ngx_strcmp(r->headers_out.content_type.data, "text/html") != 0) {
-        dd("content-type: %s, set skip flag to 1.", r->headers_out.content_type.data);
+    if (r->headers_out.content_type_len == 0) {
+        dd("no content type, content_type_len: %zu, set skip flag to 1.", r->headers_out.content_type_len);
         ilcf->skip_body_filter = 1;
+    } else if (ngx_strcmp(r->headers_out.content_type.data, "text/html") != 0) {
+        dd("content_type is not html: %s, set skip flag to 1.", r->headers_out.content_type.data);
+        ilcf->skip_body_filter = 1;        
     }
 
     return ngx_http_next_header_filter(r);
