@@ -180,6 +180,12 @@ static ngx_int_t ngx_http_iconv_header_filter(ngx_http_request_t *r)
                       "iconv does not support HTTP < 1.0 yet");
         ilcf->skip_body_filter = 1;
     }
+    
+    // check if content is text
+    if (ngx_strcmp(r->headers_out.content_type.data, "text/html") != 0) {
+        dd("content-type: %s, set skip flag to 1.", r->headers_out.content_type.data);
+        ilcf->skip_body_filter = 1;
+    }
 
     return ngx_http_next_header_filter(r);
 }
