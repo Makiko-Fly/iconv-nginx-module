@@ -181,6 +181,7 @@ static ngx_int_t ngx_http_iconv_header_filter(ngx_http_request_t *r)
         ilcf->skip_body_filter = 1;
     }
     
+    dd("Inside header filter, start checking content type"); 
     // check if content is text
     if (r->headers_out.content_type_len == 0) {
         dd("no content type, content_type_len: %zu, set skip flag to 1.", r->headers_out.content_type_len);
