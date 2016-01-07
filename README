@@ -1,3 +1,37 @@
+1. AWS 安装开发工具包
+sudo yum groupinstall "Development Tools"
+
+2. 安装 cconv 代码库
+curl -O https://cconv.googlecode.com/files/cconv-0.6.2.tar.gz
+（大陆网络无法访问 google，可以从 ainimei_util 机器上转过来）
+tar -xzvf cconv-0.6.2.tar.gz
+cd cconv-0.6.2
+./configure
+make
+sudo make install
+type “cconv” command to make sure it is successfully installed
+为 64 位机器做一下动态库的 link
+sudo ln -s /usr/local/lib/libcconv.so.0.0.0 /lib64/libcconv.so.0
+
+3. 安装依赖库 pcre-devel 和 zlib-devel
+sudo yum install pcre-devel
+sudo yum install zlib-devel
+
+3. 下载 nginx 源代码并解压
+curl -O http://nginx.org/download/nginx-1.9.4.tar.gz
+
+4. 下载 nginx 模块 ngx_devel_kit
+git clone https://github.com/simpl/ngx_devel_kit
+
+5. 下载改写后的 icconv 模块
+git clone https://github.com/Makiko-Fly/iconv-nginx-module.git
+git checkout develop
+
+6. 编译安装 nginx
+./configure --with-debug --with-ld-opt='-lcconv' --add-module=/home/ec2-user/git/ngx_devel_kit --add-module=/home/ec2-user/git/iconv-nginx-module
+make -j2
+sudo make install
+------------------------------------------------------------------------------------------------------
 Name
     iconv-nginx-module
 
